@@ -1,8 +1,4 @@
-from physiological.preprocessing import display_signal
-from load_data import balancing_data
-from physiological.feature_extraction import get_gsr_features
-from physiological.preprocessing import physiological_preprocessing
-from load_data import load_all_physiological, load_all_labels, load_labels, load_deap_data
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -10,10 +6,6 @@ import csv
 import os
 import numpy as np
 import pickle
-from keras.models import Sequential
-from keras.models import Model
-from keras import optimizers
-from keras.layers import Dense, Dropout, LSTM
 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -27,6 +19,10 @@ from keras.layers import TimeDistributed
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
 from keras.layers import Flatten
+from keras.models import Sequential
+from keras.models import Model
+from keras import optimizers
+from keras.layers import Dense, Dropout, LSTM
 
 from lstm_classification import prepare_deap_data
 from sklearn.utils import class_weight
@@ -52,6 +48,8 @@ def cnn_lstm_classification(classes, label_type, sampling_rate, part_seconds, ig
 
 
 def cnn_lstm(train_x, test_x, train_y, test_y):
+    if not os.path.exists("models"):
+        os.path.mkdir("models")
     class_weights = \
         class_weight.compute_class_weight('balanced',
                                           np.unique(train_y),
