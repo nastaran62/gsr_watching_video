@@ -21,73 +21,9 @@ from sklearn.utils import shuffle
 
 from utils import validate_predictions
 from physiological.feature_extraction import get_gsr_features
-from physiological.preprocessing import physiological_preprocessing
-from load_data import load_all_physiological, load_all_labels, load_labels, load_deap_data
 
 
-def prepare_experimental_data(classes, label_type, sampling_rate, ignore_time):
-    label_path = "data/labels/self_report.csv"
-    participant_list = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-                        32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43]
-    labels = load_all_labels(label_path)
-    all_labels = \
-        load_labels(labels, participant_list, type=label_type)
-    labels = all_labels
-    # CLASSES COUNT
-    for i in range(len(classes)):
-        print("class count", classes[i], (np.array(all_labels) == classes[i]).sum())
-
-    main_path = "data/prepared_data"
-    physiological_data = load_all_physiological(main_path, participant_list)
-
-    participants, trials = np.array(all_labels).shape
-    all_processed_physiological = []
-    for p in range(participants):
-        all_trials_physiological = []
-        for t in range(trials):
-            # preprocessing
-            # Ignores 8 seconds from the start of each trial
-            preprocessed_physiological = \
-                physiological_preprocessing(physiological_data[p, t, ignore_time*sampling_rate:, 0],
-                                            sampling_rate=sampling_rate)
-
-            all_trials_physiological.append(preprocessed_physiological)
-
-        all_processed_physiological.append(all_trials_physiological)
-    physiological_data = np.array(all_processed_physiological)
-    print(np.array(labels).shape)
-    return physiological_data, np.array(labels)
-
-
-def prepare_deap_data(classes, label_type, sampling_rate, ignore_time):
-    gsr_data, labels = \
-        load_deap_data(label_type=label_type)
-
-    # CLASSES COUNT
-    for i in range(len(classes)):
-        print("class count", classes[i], (labels == classes[i]).sum())
-
-    all_processed_physiological = []
-    for p in range(gsr_data.shape[0]):
-        all_trials_physiological = []
-        for t in range(gsr_data.shape[1]):
-            # preprocessing
-            # Ignores 8 seconds from the start of each trial
-            preprocessed_physiological = \
-                physiological_preprocessing(gsr_data[p, t, 0, ignore_time*sampling_rate:],
-                                            sampling_rate=sampling_rate)
-
-            all_trials_physiological.append(preprocessed_physiological)
-
-        all_processed_physiological.append(all_trials_physiological)
-    physiological_data = np.array(all_processed_physiological)
-
-    return physiological_data, labels
-
-
-def pca_classification(classes, label_type, sampling_rate, ignore_time):
-    physiological_data, labels = prepare_experimental_data(
-        classes, label_type, sampling_rate, ignore_time)
+def pca_classification(physiological_data, labels, classes):
     gsr_data = physiological_data[:, :, :]
     print(physiological_data.shape, labels.shape, gsr_data.shape)
     gsr_train, gsr_test, \
@@ -108,15 +44,13 @@ def pca_classification(classes, label_type, sampling_rate, ignore_time):
     gsr_test = pca.transform(gsr_test)
 
     preds_gsr = \
-        physiological_classification(gsr_train, gsr_test, y_train, y_test)
+        physiological_classification(gsr_train, gsr_test, y_train, y_test, classes)
     print("GSR GSR GSR")
     gsr_result = validate_predictions(preds_gsr, y_test, classes)
     print(gsr_result)
 
 
-def feature_classification(classes, label_type, sampling_rate, part_seconds, ignore_time):
-    physiological_data, labels = \
-        prepare_deap_data(classes, label_type, sampling_rate, ignore_time)
+def feature_classification(physiological_data, labels, part_seconds, classes, sampling_rate=128):
 
     # physiological_data, labels = \
     #    prepare_experimental_data(classes, label_type, sampling_rate, ignore_time)
