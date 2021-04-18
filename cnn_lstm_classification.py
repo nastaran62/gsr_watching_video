@@ -40,7 +40,7 @@ def cnn_lstm_classification(physiological_data, labels, classes):
 
 def cnn_lstm(train_x, test_x, train_y, test_y):
     if not os.path.exists("models"):
-        os.path.mkdir("models")
+        os.mkdir("models")
     class_weights = \
         class_weight.compute_class_weight('balanced',
                                           np.unique(train_y),

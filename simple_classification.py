@@ -57,7 +57,6 @@ def feature_classification(physiological_data, labels, part_seconds, classes, sa
     participants, trials = np.array(labels).shape
     participants, trials, points = physiological_data.shape
     all_physiological_features = []
-    i = 0
     part_length = part_seconds * sampling_rate
     part_count = int(points / part_length)
     all_participants_labels = []
@@ -71,7 +70,6 @@ def feature_classification(physiological_data, labels, part_seconds, classes, sa
                 physiological_parts.append(get_gsr_features(
                     physiological_data[p, t, i*part_length:(i+1)*part_length]))
                 all_parts_labels.append(labels[p, t])
-                i += 1
             all_trial_labels.append(all_parts_labels)
             all_trials_physiological.append(physiological_parts)
         all_participants_labels.append(all_trial_labels)

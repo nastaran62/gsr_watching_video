@@ -28,12 +28,10 @@ def lstm_classification(physiological_data, labels, part_seconds, classes, sampl
     Classify data using lstm method
     '''
     participants, trials = np.array(labels).shape
-    all_physiological_features = []
-    i = 0
-
     participants, trials, points = physiological_data.shape
     part_length = part_seconds * sampling_rate
     part_count = int(points / part_length)
+    all_physiological_features = []
     all_participants_labels = []
     for p in range(participants):
         all_trials_physiological = []
@@ -48,7 +46,6 @@ def lstm_classification(physiological_data, labels, part_seconds, classes, sampl
                 gsr_labels = labels[p, t]
 
                 physiological_parts.append(get_gsr_features(gsr_data))
-                i += 1
             all_trial_labels.append(gsr_labels)
             all_trials_physiological.append(physiological_parts)
         all_participants_labels.append(all_trial_labels)
@@ -94,7 +91,7 @@ def physiological_lstm_classifier(train_x, test_x, train_y, test_y, classes):
     '''
     print("train_x", train_x.shape)
     if not os.path.exists("models"):
-        os.path.mkdir("models")
+        os.mkdir("models")
     train_x, test_x = \
         feature_scaling_for_lstm(train_x, test_x, method="standard")
     class_weights = \
