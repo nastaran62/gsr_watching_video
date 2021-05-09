@@ -8,7 +8,13 @@ from neurokit.bio.bio_eda import eda_process
 def prop_neg_derivatives(arr):
     x = (arr<0).sum()/np.product(arr.shape)
     return x
-
+def negative(arr):
+    c = []
+    for i in arr:
+        if i < 0:
+            c.append(i)
+    return np.array(c)
+            
 def get_gsr_features(gsr_data):
     #phasic, tonic = extract_gsr_components(data[i, 0, :], 128)
     #phasic_features = [np.mean(phasic), np.std(phasic)]
@@ -18,10 +24,14 @@ def get_gsr_features(gsr_data):
     diff2 = np.diff(gsr_data, n=2)
     d1 = prop_neg_derivatives(diff)
     d2 = prop_neg_derivatives(diff2)
+    neg = negative(diff)
+    neg2 = negative(diff2)
+    neg_features = [np.mean(neg), np.std(neg)]
+    neg2_features = [np.mean(neg2), np.std(neg2)]
     diff_features = [np.mean(diff), np.std(diff)]
     diff_features2 = [np.mean(diff2), np.std(diff2)]
     feature = \
-        gsr_features + diff_features + diff_features2 +d1 +d2
+        gsr_features + diff_features + diff_features2 + d1 + d2
     
     # _get_frequency_features(gsr_data)
     # [gsr_entropy]
@@ -53,7 +63,7 @@ def extract_gsr_components(gsr_data, sampling_rate):
     eda = processed_eda['df']
     phasic = eda["EDA_Phasic"]
     tonic = eda["EDA_Tonic"]
-    return np.array(phasic), np.array(tonic)
+    #return np.array(phasic), np.array(tonic)
     
     filtered = eda["EDA_Filtered"]
     print(filtered)
