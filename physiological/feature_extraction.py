@@ -5,6 +5,9 @@ import scipy
 from pywt import wavedec
 from neurokit.bio.bio_eda import eda_process
 
+def prop_neg_derivatives(arr):
+    x = (arr<0).sum()/np.product(arr.shape)
+    return x
 
 def get_gsr_features(gsr_data):
     #phasic, tonic = extract_gsr_components(data[i, 0, :], 128)
@@ -13,19 +16,22 @@ def get_gsr_features(gsr_data):
     gsr_features = [np.mean(gsr_data), np.std(gsr_data)]
     diff = np.diff(gsr_data, n=1)
     diff2 = np.diff(gsr_data, n=2)
+    d1 = prop_neg_derivatives(diff)
+    d2 = prop_neg_derivatives(diff2)
     diff_features = [np.mean(diff), np.std(diff)]
     diff_features2 = [np.mean(diff2), np.std(diff2)]
-
     feature = \
-        gsr_features + diff_features + diff_features2
+        gsr_features + diff_features + diff_features2 +d1 +d2
+    
     # _get_frequency_features(gsr_data)
     # [gsr_entropy]
     return np.array(feature)
 
 
+
 def _get_frequency_features(data):
 
-    (cA, cD) = pywt.dwt([1, 2, 3, 4, 5, 6], 'db1')
+    (cA, cD) = pywt.dwt([1, 26, 3, 4, 5, 6], 'db1')
 
     bands = [cA, cD]
     all_features = []
@@ -48,9 +54,9 @@ def extract_gsr_components(gsr_data, sampling_rate):
     phasic = eda["EDA_Phasic"]
     tonic = eda["EDA_Tonic"]
     return np.array(phasic), np.array(tonic)
-    '''
+    
     filtered = eda["EDA_Filtered"]
-
+    print(filtered)
     fig1, ax1 = plt.subplots(4, sharex=False, sharey=False)
     ax1[0].plot(filtered)
     ax1[0].set(ylabel="filtered")
@@ -70,4 +76,4 @@ def extract_gsr_components(gsr_data, sampling_rate):
     ax1[2].scatter(minima, np.array(tonic)[minima], linewidth=0.03, s=50, c='r')
 
     plt.show()
-    '''
+    #return np.array(phasic), np.array(tonic)
