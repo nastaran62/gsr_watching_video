@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, precision_recall_fscore_support
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.models import load_model
 from keras.layers import TimeDistributed

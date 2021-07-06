@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report, accuracy_score, \
 from sklearn.utils import class_weight
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.models import load_model
 from keras import optimizers
@@ -74,8 +74,8 @@ def feature_scaling_for_lstm(train, test, method="standard"):
         scaler = MinMaxScaler(feature_range=(0, 1))
     train_samples, train_times, train_features = train.shape
     test_samples, test_times, test_features = test.shape
-    train = train.reshape(train_samples*train_times, train_features)
-    test = test.reshape(test_samples*test_times, test_features)
+    train = train.reshape(train_samples, train_times*train_features)
+    test = test.reshape(test_samples, test_times*test_features)
     scaler.fit(train)
     train = scaler.transform(train)
     test = scaler.transform(test)

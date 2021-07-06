@@ -3,7 +3,6 @@ import csv
 import pickle
 import numpy as np
 from scipy import signal
-import heartpy as hp
 import matplotlib.pyplot as plt
 
 

@@ -1,9 +1,12 @@
-import pywt
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
-from pywt import wavedec
 from neurokit.bio.bio_eda import eda_process
+
+
+def prop_neg_derivatives(arr):
+    x = (arr < 0).sum()/np.product(arr.shape)
+    return x
 
 
 def get_gsr_features(gsr_data):
@@ -15,25 +18,14 @@ def get_gsr_features(gsr_data):
     diff2 = np.diff(gsr_data, n=2)
     diff_features = [np.mean(diff), np.std(diff)]
     diff_features2 = [np.mean(diff2), np.std(diff2)]
+    d1 = prop_neg_derivatives(diff)
+    d2 = prop_neg_derivatives(diff2)
 
     feature = \
-        gsr_features + diff_features + diff_features2
+        gsr_features  # + diff_features + diff_features2 + d1 + d2
     # _get_frequency_features(gsr_data)
     # [gsr_entropy]
     return np.array(feature)
-
-
-def _get_frequency_features(data):
-
-    (cA, cD) = pywt.dwt([1, 2, 3, 4, 5, 6], 'db1')
-
-    bands = [cA, cD]
-    all_features = []
-    for band in range(len(bands)):
-        power = np.sum(bands[band]**2)
-        entropy = np.sum((bands[band]**2)*np.log(bands[band]**2))
-        all_features.extend([power, entropy])
-    return all_features
 
 
 def _get_multimodal_statistics(signal_data):

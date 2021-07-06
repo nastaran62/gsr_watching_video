@@ -81,10 +81,10 @@ def prepare_deap_data():
 
 
 # Loading deap dataset
-#physiological_data, labels = prepare_deap_data()
+physiological_data, labels = prepare_deap_data()
 
 # Loading experimental dataset
-physiological_data, labels = prepare_experimental_data()
+#physiological_data, labels = prepare_experimental_data()
 
 lstm_classification(physiological_data, labels, PART_SECONDS,
                     CLASSES, sampling_rate=GSR_SAMPLING_RATE)

@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+numpy = "*"
+matplotlib = "*"
+scipy = "*"
+neurokit = "~=0.2.0"
+keras = "~=2.4.3"
+sklearn = "*"
+seaborn = "~=0.11.1"
+pandas = "*"
+
+[requires]
+python_version = "3.9"
