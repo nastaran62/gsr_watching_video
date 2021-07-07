@@ -10,10 +10,10 @@ numpy = "*"
 matplotlib = "~=3.4.2"
 scipy = "~=1.7.0"
 neurokit = "~=0.2.0"
-tensorflow = "2.4.0"
+tensorflow = "==2.4.2"
 sklearn = "~=0.0"
 seaborn = "~=0.11.1"
 pandas = "1.3.0"
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
