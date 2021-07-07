@@ -13,11 +13,11 @@ from sklearn.utils import class_weight
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from tensorflow.keras.utils import to_categorical
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.models import load_model
-from keras import optimizers
-from keras.layers import Dense, Dropout, LSTM
-from keras.models import Sequential
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.models import load_model
+from tensorflow.keras import optimizers
+from tensorflow.keras.layers import Dense, Dropout, LSTM
+from tensorflow.keras.models import Sequential
 
 from physiological.feature_extraction import get_gsr_features
 from utils import validate_predictions

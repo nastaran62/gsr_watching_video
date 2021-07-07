@@ -13,16 +13,16 @@ from sklearn.metrics import classification_report, accuracy_score, precision_rec
 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from tensorflow.keras.utils import to_categorical
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.models import load_model
-from keras.layers import TimeDistributed
-from keras.layers.convolutional import Conv1D
-from keras.layers.convolutional import MaxPooling1D
-from keras.layers import Flatten
-from keras.models import Sequential
-from keras.models import Model
-from keras import optimizers
-from keras.layers import Dense, Dropout, LSTM
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import TimeDistributed
+from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.layers import MaxPooling1D
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Model
+from tensorflow.keras import optimizers
+from tensorflow.keras.layers import Dense, Dropout, LSTM
 
 from sklearn.utils import class_weight
 from utils import validate_predictions
