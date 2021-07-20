@@ -11,12 +11,12 @@ def prop_neg_derivatives(arr):
 
 def get_local_maxima(data):
     '''Reterns local maximums'''
-    return scipy.signal.argrelextrema(x, np.greater)
+    return scipy.signal.argrelextrema(data, np.greater)[0]
 
 
 def get_local_minima(data):
     '''Reterns local minimums'''
-    return scipy.signal.argrelextrema(x, np.less)
+    return scipy.signal.argrelextrema(data, np.less)[0]
 
 
 def get_frequency_peak(data):
@@ -24,139 +24,149 @@ def get_frequency_peak(data):
     local_maxima = get_local_maxima(data)
     local_minima = get_local_minima(data)
 
-    freq_extremes = local_maxima.size + local_minima.size
+    freq_extremes = len(local_maxima) + len(local_minima)
 
-    return freq_extremes
+    return [freq_extremes]
     
 
 def get_max_amp_peak(data):
-    '''Returns the highest value of the determined maximums'''
-    local_maxima = get_local_maxima(data)
-    return max(list(local_maxima))
+    '''Returns the highest value of the determined maximums if it exists. Otherwise it returns zero'''
+    # This function should be tested.
+    local_maxima = list(get_local_maxima(data)) + [0]
+    return [max(local_maxima)]
 
 
 def get_var_amp_peak(data):
     '''Returns variance of amplitude values calculated for local extremes'''
     # The amplitude should be calculated relative to the signal, not to zero. 
+    # This function should be tested.
     # This function should be improved.
     amplitude_of_local_maxima = np.absolute(get_local_maxima(data))
     amplitude_of_local_minima = np.absolute(get_local_minima(data))
+    if len(amplitude_of_local_maxima) + len(amplitude_of_local_minima) == 0:
+        return [0]
     variance = np.var(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
 
-    return variance
+    return [variance]
 
 
 def std_amp_peak(data):
     '''Returns the standard deviation calculated for local extremes'''
+    # This function should be tested well.
+    # This function should be improved.
     local_extremes = list(get_local_maxima(data)) + list(get_local_minima(data))
-
-    return np.std(local_extremes)
+    if len(local_extremes) == 0:
+        return [0]
+    return [np.std(local_extremes)]
 
 
 def skewness_amp_peak(data):
     '''Retruns the skewness calculated for amplitude of local extremes'''
     # The amplitude should be calculated relative to the signal, not to zero. 
+    # This function should be tested.
     # This function should be improved.
     amplitude_of_local_maxima = np.absolute(get_local_maxima(data))
     amplitude_of_local_minima = np.absolute(get_local_minima(data))
     skewness = scipy.stats.skew(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
 
-    return skewness
+    return [skewness]
 
 
 def kurtosis_amp_peak(data):
     '''Retruns the kurtosis calculated for amplitude of local extremes'''
     # The amplitude should be calculated relative to the signal, not to zero. 
+    # This function should be tested.
     # This function should be improved.
     amplitude_of_local_maxima = np.absolute(get_local_maxima(data))
     amplitude_of_local_minima = np.absolute(get_local_minima(data))
     kurtosis = scipy.stats.kurtosis(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
 
-    return kurtosis
+    return [kurtosis]
 
 
 def max_abs_amp_peak(data):
     '''Retruns the kurtosis calculated for amplitude of local extremes'''
     # The amplitude should be calculated relative to the signal, not to zero. 
+    # This function should be tested.
     # This function should be improved.
     amplitude_of_local_maxima = np.absolute(get_local_maxima(data))
     amplitude_of_local_minima = np.absolute(get_local_minima(data))
     max_val = max(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
 
 
-    return max_val
+    return [max_val]
 
 
-def variance_gsr(data):
+def variance(data):
     '''Returns the variance of the data'''
     var = np.var(data)
 
-    return var
+    return [var]
 
 
-def standard_deviation_gsr(data):
+def standard_deviation(data):
     '''Returns the standard deviation of the data'''
     std = np.std(data)
 
-    return std
+    return [std]
 
 
-def skewness_gsr(data):
+def skewness(data):
     '''Returns the skewness of the data'''
     skewness = scipy.stats.skew(data)
 
-    return skewness
+    return [skewness]
 
 
-def kurtosis_gsr(data):
+def kurtosis(data):
     '''Returns kurtosis calculated from the data'''
     kurtosis = scipy.stats.kurtosis(data)
 
-    return kurtosis
+    return [kurtosis]
 
 
-def sum_of_positive_derivative_gsr(data):
+def sum_of_positive_derivative(data):
     '''Retruns the sum of positive values of the first derivative of the data'''
     first_derivative = np.diff(data, n=1)
     pos_sum = sum(d for d in first_derivative if d > 0)
 
-    return pos_sum
+    return [pos_sum]
 
 
-def sum_of_negative_derivative_gsr(data):
+def sum_of_negative_derivative(data):
     '''Returns the sum of the negative values of the first derivative of the data'''
     first_derivative = np.diff(data, n=1)
     neg_sum = sum(d for d in first_derivative if d < 0)
 
-    return neg_sum
+    return [neg_sum]
 
 
-def mean_gsr(data):
+def mean(data):
     '''Returns the mean of the data'''
     mean = np.mean(data)
 
-    return mean
+    return [mean]
 
-def median_gsr(data):
+def median(data):
     '''Returns the median of the data'''
     median = np.median(data)
 
-    return median
+    return [median]
 
-def range_gsr(data):
+def range(data):
     '''Retruns the range of the data'''
     range = max(data) - min(data)
 
-    return range
+    return [range]
 
 
-def maximum_gsr(data):
+def maximum(data):
     '''Returns the maximum of the data'''
-    return max(data)
+    return [max(data)]
 
-def minimum_gsr(data):
+def minimum(data):
     '''Returns the minimum of the data'''
-    return min(data)
+    return [min(data)]
 
 
 
@@ -164,18 +174,21 @@ def get_gsr_features(gsr_data):
     #phasic, tonic = extract_gsr_components(data[i, 0, :], 128)
     #phasic_features = [np.mean(phasic), np.std(phasic)]
     #tonic_features = [np.mean(tonic), np.std(tonic)]
-    gsr_features = [np.mean(gsr_data), np.std(gsr_data)]
-    diff = np.diff(gsr_data, n=1)
-    diff2 = np.diff(gsr_data, n=2)
-    diff_features = [np.mean(diff), np.std(diff)]
-    diff_features2 = [np.mean(diff2), np.std(diff2)]
-    d1 = prop_neg_derivatives(diff)
-    d2 = prop_neg_derivatives(diff2)
+    # gsr_features = [np.mean(gsr_data), np.std(gsr_data)]
+    # diff = np.diff(gsr_data, n=1)
+    # diff2 = np.diff(gsr_data, n=2)
+    # diff_features = [np.mean(diff), np.std(diff)]
+    # diff_features2 = [np.mean(diff2), np.std(diff2)]
+    # d1 = prop_neg_derivatives(diff)
+    # d2 = prop_neg_derivatives(diff2)
 
-    feature = \
-        gsr_features  # + diff_features + diff_features2 + d1 + d2
-    # _get_frequency_features(gsr_data)
-    # [gsr_entropy]
+    # feature = \
+    #     gsr_features  # + diff_features + diff_features2 + d1 + d2
+    # # _get_frequency_features(gsr_data)
+    # # [gsr_entropy]
+    gsr_features = mean(gsr_data) + standard_deviation(gsr_data)  + get_frequency_peak(gsr_data) + \
+        sum_of_positive_derivative(gsr_data) + maximum(gsr_data) + std_amp_peak(gsr_data) + get_var_amp_peak(gsr_data)
+    feature = gsr_features 
     return np.array(feature)
 
 
