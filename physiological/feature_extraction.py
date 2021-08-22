@@ -11,7 +11,7 @@ def prop_neg_derivatives(arr):
 
 
 def get_local_maxima(data):
-    ''' 
+    '''
     :type data: List[int] - Accepts an array of numbers
     :rtype: List[int] - Reterns local maximums
     '''
@@ -37,7 +37,7 @@ def get_frequency_peak(data):
     freq_extremes = len(local_maxima) + len(local_minima)
 
     return [freq_extremes]
-    
+
 
 def get_max_amp_peak(data):
     '''
@@ -97,7 +97,8 @@ def kurtosis_amp_peak(data):
     amplitude_of_local_minima = np.absolute(get_local_minima(data))
     if len(amplitude_of_local_maxima) + len(amplitude_of_local_minima) == 0:
         return [0]
-    kurtosis = scipy.stats.kurtosis(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
+    kurtosis = scipy.stats.kurtosis(list(amplitude_of_local_maxima) +
+                                    list(amplitude_of_local_minima))
 
     return [kurtosis]
 
@@ -112,7 +113,6 @@ def max_abs_amp_peak(data):
     if len(amplitude_of_local_maxima) + len(amplitude_of_local_minima) == 0:
         return [0]
     max_val = max(list(amplitude_of_local_maxima) + list(amplitude_of_local_minima))
-
 
     return [max_val]
 
@@ -225,7 +225,6 @@ def minimum(data):
     return [min(data)]
 
 
-
 def get_gsr_features(gsr_data):
     #phasic, tonic = extract_gsr_components(data[i, 0, :], 128)
     #phasic_features = [np.mean(phasic), np.std(phasic)]
@@ -242,7 +241,8 @@ def get_gsr_features(gsr_data):
     #     gsr_features  # + diff_features + diff_features2 + d1 + d2
     # # _get_frequency_features(gsr_data)
     # # [gsr_entropy]
-    gsr_features =  mean(gsr_data) + standard_deviation(gsr_data) + get_frequency_peak(gsr_data) + get_max_amp_peak(gsr_data) + sum_of_negative_derivative(gsr_data)
+    gsr_features = mean(gsr_data) + standard_deviation(gsr_data) + get_frequency_peak(gsr_data) + \
+        get_max_amp_peak(gsr_data) + sum_of_negative_derivative(gsr_data)
     return np.array(gsr_features)
 
 

@@ -3,10 +3,10 @@ from load_data import load_all_physiological, load_all_labels, load_labels, load
 from physiological.preprocessing import physiological_preprocessing
 from lstm_classification import lstm_classification
 from cnn_lstm_classification import cnn_lstm_classification
-from simple_classification import feature_classification
+from simple_classification import feature_classification, kfold_testing
 
 
-PART_SECONDS = 1
+PART_SECONDS = 5
 LABEL_TYPE = "arousal"
 GSR_SAMPLING_RATE = 128
 IGNORE_TIME = 8
@@ -86,8 +86,10 @@ physiological_data, labels = prepare_deap_data()
 # Loading experimental dataset
 #physiological_data, labels = prepare_experimental_data()
 
-lstm_classification(physiological_data, labels, PART_SECONDS,
-                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+# lstm_classification(physiological_data, labels, PART_SECONDS,
+#                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 #cnn_lstm_classification(physiological_data, labels, CLASSES)
 # feature_classification(physiological_data, labels, PART_SECONDS,
 #                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+kfold_testing(physiological_data, labels, PART_SECONDS,
+              CLASSES, sampling_rate=GSR_SAMPLING_RATE)
