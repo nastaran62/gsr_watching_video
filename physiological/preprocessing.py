@@ -21,10 +21,10 @@ def physiological_preprocessing(physiological_data, sampling_rate=128):
 
     preprocessed_gsr = gsr_noise_cancelation(physiological_data,
                                              sampling_rate)
-    data = normalization(np.array(preprocessed_gsr))
+    #data = normalization(np.array(preprocessed_gsr))
     # display_signal(normalization(np.array(preprocessed_gsr)))
 
-    return data
+    return preprocessed_gsr
 
 
 def gsr_noise_cancelation(data, sampling_rate, low_pass=0.1, high_pass=15):

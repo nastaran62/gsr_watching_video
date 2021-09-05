@@ -288,6 +288,12 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
     for train_index, test_index in kf.split(labels):
         physiological_train, physiological_test = \
             physiological_features[train_index, :], physiological_features[test_index, :]
+
+        mean = np.mean(physiological_train)
+        std = np.std(physiological_train)
+        physiological_train = (physiological_train - mean) / std
+        physiological_test = (physiological_test - mean) / std
+
         y_train, y_test = labels[train_index], labels[test_index]
         preds_physiological = \
             physiological_classification(

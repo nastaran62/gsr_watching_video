@@ -241,7 +241,8 @@ def get_gsr_features(gsr_data):
     #     gsr_features  # + diff_features + diff_features2 + d1 + d2
     # # _get_frequency_features(gsr_data)
     # # [gsr_entropy]
-    gsr_features = mean(gsr_data) + standard_deviation(gsr_data) + get_frequency_peak(gsr_data) + \
+    gsr_features = mean(gsr_data) + \
+        standard_deviation(gsr_data) + get_frequency_peak(gsr_data) + \
         get_max_amp_peak(gsr_data) + sum_of_negative_derivative(gsr_data)
     return np.array(gsr_features)
 
