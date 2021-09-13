@@ -23,8 +23,10 @@ def physiological_preprocessing(physiological_data, sampling_rate=128):
                                              sampling_rate)
     #data = normalization(np.array(preprocessed_gsr))
     # display_signal(normalization(np.array(preprocessed_gsr)))
-
-    return preprocessed_gsr
+    normalized = baseline_normalization(preprocessed_gsr[sampling_rate*3:],
+                                        preprocessed_gsr[0:3*sampling_rate],
+                                        128)
+    return normalized
 
 
 def gsr_noise_cancelation(data, sampling_rate, low_pass=0.1, high_pass=15):
@@ -36,13 +38,18 @@ def gsr_noise_cancelation(data, sampling_rate, low_pass=0.1, high_pass=15):
     output = signal.filtfilt(b, a, np.array(data, dtype=np.float))
 
     # Removing rapid transient artifacts
-    final_output = signal.medfilt(output, kernel_size=5)
-    return final_output
-
-
-def normalization(data):
-    # Normalization
-    min = np.amin(data)
-    max = np.amax(data)
-    output = (data - min) / (max - min)
+    output = signal.medfilt(output, kernel_size=5)
     return output
+
+
+def baseline_normalization(data, baseline, sampling_rate=128):
+    length = int(baseline.shape[0] / sampling_rate)
+    all = []
+    for i in range(length):
+        all.append(baseline[i*sampling_rate:(i+1)*sampling_rate])
+    baseline = np.mean(np.array(all), axis=0)
+
+    window_count = round(data.shape[0] / sampling_rate)
+    for i in range(window_count):
+        data[i*sampling_rate:(i+1)*sampling_rate] -= baseline
+    return data

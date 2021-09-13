@@ -81,9 +81,9 @@ def feature_classification(physiological_data, labels, part_seconds, classes, sa
     physiological_data = np.array(all_physiological_features)
     all_participants_labels = np.array(all_participants_labels)
 
-    physiological_train, physiological_test, \
-        y_train, y_test = \
-        leave_one_subject_out_split(physiological_data, all_participants_labels)
+    #physiological_train, physiological_test, \
+    #    y_train, y_test = \
+    #    leave_one_subject_out_split(physiological_data, all_participants_labels)
 
     physiological_train, physiological_test, \
         y_train, y_test = \
@@ -101,23 +101,14 @@ def feature_classification(physiological_data, labels, part_seconds, classes, sa
 
 
 def physiological_classification(x_train, x_test, y_train, y_test, classes):
-    # clf = svm.SVC(probability=True)
-    #clf = svm.SVC(C=150, kernel="rbf", gamma="auto", probability=True, class_weight='balanced')
-    #clf = KNeighborsClassifier(n_neighbors=len(classes)+1)
-    clf = RandomForestClassifier(n_estimators=200, class_weight='balanced')
-    # clf = AdaBoostClassifier(n_estimators=100, learning_rate=1)
-    #clf = GaussianNB()
-    # clf = QuadraticDiscriminantAnalysis()
-    # clf = LinearDiscriminantAnalysis()
-    # clf = MLPClassifier()
-    # clf = LinearDiscriminantAnalysis()
-    clf.fit(x_train, y_train)
-    print("physiological prediction", clf.predict(x_test))
-    pred_values = clf.predict_proba(x_test)
+    train_mean = np.mean(x_train)
+    train_std = np.std(x_train)
+    x_train = (x_train - train_mean) / train_std
+    x_test = (x_test - train_mean) / train_std
 
-    # acc = accuracy_score(pred_values, y_test)
-    # print(classification_report(y_test, pred_values))
-    # print(acc)
+    clf = RandomForestClassifier(n_estimators=200, max_features="auto", class_weight='balanced')
+    clf.fit(x_train, y_train)
+    pred_values = clf.predict_proba(x_test)
     return pred_values
 
 
@@ -135,16 +126,9 @@ def normal_train_test_split(physiological_data, labels):
     physiological_train, physiological_test, y_train, y_test = \
         train_test_split(np.array(physiological_features),
                          np.array(labels),
-                         test_size=0.2,
+                         test_size=0.3,
                          random_state=100,
                          stratify=labels)
-
-    scaler = MinMaxScaler()
-    # Fit on training set only.
-    # Apply transform to both the training set and the test set.
-    scaler.fit(physiological_train)
-    physiological_train = scaler.transform(physiological_train)
-    physiological_test = scaler.transform(physiological_test)
     return physiological_train, physiological_test, \
         y_train, y_test
 
@@ -257,6 +241,7 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
     else:
         part_length = part_seconds * sampling_rate
         part_count = int(points / part_length)
+        print(part_count)
     all_participants_labels = []
     for p in range(participants):
         all_trials_physiological = []
@@ -278,8 +263,11 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
     physiological_features = \
         physiological_data.reshape(-1, physiological_data.shape[-1])
     labels = \
-        np.array(labels).reshape(-1)
-
+        np.array(all_participants_labels).reshape(-1)
+    # CLASSES COUNT
+    CLASSES = [0, 1]
+    for i in range(len(CLASSES)):
+        print("class count", CLASSES[i], (np.array(labels) == CLASSES[i]).sum())
     k = 5
     kf = KFold(n_splits=k, shuffle=True, random_state=100)
     sum_fscore = 0
@@ -288,13 +276,15 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
     for train_index, test_index in kf.split(labels):
         physiological_train, physiological_test = \
             physiological_features[train_index, :], physiological_features[test_index, :]
-
-        mean = np.mean(physiological_train)
-        std = np.std(physiological_train)
-        physiological_train = (physiological_train - mean) / std
-        physiological_test = (physiological_test - mean) / std
+        #mean = np.mean(physiological_train)
+        #std = np.std(physiological_train)
+        #physiological_train = (physiological_train - mean) / std
+        #physiological_test = (physiological_test - mean) / std
 
         y_train, y_test = labels[train_index], labels[test_index]
+        print(physiological_train.shape, physiological_test.shape)
+        print(y_train.shape, y_test.shape)
+        input()
         preds_physiological = \
             physiological_classification(
                 physiological_train, physiological_test, y_train, y_test, classes)

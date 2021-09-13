@@ -83,15 +83,15 @@ def load_all_labels(path):
             all_participants[participant_number]["emotion"].append(4)
 
         all_participants[participant_number]["intensity"].append(row["intensity"])
-        if row["valence"] < 4:
-            all_participants[participant_number]["valence"].append(0)
-        elif row["valence"] >= 4:
+        if row["valence"] >= 5:
             all_participants[participant_number]["valence"].append(1)
-        if row["arousal"] > 4:
+        else:
+            all_participants[participant_number]["valence"].append(0)
+        if row["arousal"] > 5:
             all_participants[participant_number]["arousal"].append(1)
         else:
             all_participants[participant_number]["arousal"].append(0)
-        if row["dominance"] >= 4:
+        if row["dominance"] > 5:
             all_participants[participant_number]["dominance"].append(1)
         else:
             all_participants[participant_number]["dominance"].append(0)
@@ -104,13 +104,13 @@ def load_all_physiological(path, all_participants):
         all_trials_data = []
         trials_path = os.path.join(path,
                                    "p{0}".format(str(participant_number).zfill(2)),
-                                   "physiological_csv")
+                                   "gsr")
         all_trials = os.listdir(trials_path)
         all_trials.sort()
         for trial in all_trials:
             trial_path = os.path.join(trials_path, trial)
             trial_data = np.loadtxt(trial_path, delimiter=',')
-            all_trials_data.append(trial_data)
+            all_trials_data.append(trial_data[-10624:])
         all_physiologcal.append(np.array(all_trials_data))
     print(np.array(all_physiologcal).shape)
     return np.array(all_physiologcal)

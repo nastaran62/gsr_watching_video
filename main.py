@@ -6,10 +6,9 @@ from cnn_lstm_classification import cnn_lstm_classification
 from simple_classification import feature_classification, kfold_testing
 
 
-PART_SECONDS = 5
+WINDOW_SIZE = 1
 LABEL_TYPE = "arousal"
 GSR_SAMPLING_RATE = 128
-IGNORE_TIME = 8
 
 if LABEL_TYPE == "emotion":
     CLASSES = [0, 1, 2, 3, 4]
@@ -18,7 +17,7 @@ else:
 
 
 def prepare_experimental_data():
-    path = "data/prepared_data"
+    path = "data/prepared_data0"
     participant_list = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
                         32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43]
     label_path = "data/labels/self_report.csv"
@@ -26,9 +25,6 @@ def prepare_experimental_data():
     all_labels = \
         load_labels(labels, participant_list, type=LABEL_TYPE)
     labels = all_labels
-    # CLASSES COUNT
-    for i in range(len(CLASSES)):
-        print("class count", CLASSES[i], (np.array(all_labels) == CLASSES[i]).sum())
 
     physiological_data = load_all_physiological(path, participant_list)
 
@@ -39,7 +35,7 @@ def prepare_experimental_data():
         for t in range(trials):
             # preprocessing
             # Ignores 8 seconds from the start of each trial
-            data = physiological_data[p, t, IGNORE_TIME*GSR_SAMPLING_RATE:, 1]
+            data = physiological_data[p, t, :]
             preprocessed_physiological = \
                 physiological_preprocessing(data,
                                             sampling_rate=GSR_SAMPLING_RATE)
@@ -67,7 +63,7 @@ def prepare_deap_data():
         for t in range(gsr_data.shape[1]):
             # preprocessing
             # Ignores IGNORE_TIME seconds from the start of each trial
-            data = gsr_data[p, t, 0, IGNORE_TIME*GSR_SAMPLING_RATE:]
+            data = gsr_data[p, t, 0, :]
             preprocessed_physiological = \
                 physiological_preprocessing(data,
                                             sampling_rate=GSR_SAMPLING_RATE)
@@ -81,15 +77,15 @@ def prepare_deap_data():
 
 
 # Loading deap dataset
-physiological_data, labels = prepare_deap_data()
+#physiological_data, labels = prepare_deap_data()
 
 # Loading experimental dataset
-#physiological_data, labels = prepare_experimental_data()
+physiological_data, labels = prepare_experimental_data()
 
-# lstm_classification(physiological_data, labels, PART_SECONDS,
+# lstm_classification(physiological_data, labels, WINDOW_SIZE,
 #                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 #cnn_lstm_classification(physiological_data, labels, CLASSES)
-# feature_classification(physiological_data, labels, PART_SECONDS,
+# feature_classification(physiological_data, labels, WINDOW_SIZE,
 #                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
-kfold_testing(physiological_data, labels, PART_SECONDS,
+kfold_testing(physiological_data, labels, WINDOW_SIZE,
               CLASSES, sampling_rate=GSR_SAMPLING_RATE)

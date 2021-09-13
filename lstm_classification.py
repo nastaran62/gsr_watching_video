@@ -69,6 +69,12 @@ def lstm_classification(physiological_data, labels, part_seconds, classes, sampl
 
 
 def feature_scaling_for_lstm(train, test, method="standard"):
+
+    mean = np.mean(train)
+    std = np.std(train)
+    train = (train - mean) / std
+    test = (test - mean) / std
+    '''
     scaler = StandardScaler()
     if method == "minmax":
         scaler = MinMaxScaler(feature_range=(0, 1))
@@ -82,6 +88,7 @@ def feature_scaling_for_lstm(train, test, method="standard"):
 
     train = train.reshape(train_samples, train_times, train_features)
     test = test.reshape(test_samples, test_times, test_features)
+    '''
     return train, test
 
 

@@ -226,24 +226,15 @@ def minimum(data):
 
 
 def get_gsr_features(gsr_data):
-    #phasic, tonic = extract_gsr_components(data[i, 0, :], 128)
-    #phasic_features = [np.mean(phasic), np.std(phasic)]
-    #tonic_features = [np.mean(tonic), np.std(tonic)]
-    # gsr_features = [np.mean(gsr_data), np.std(gsr_data)]
-    # diff = np.diff(gsr_data, n=1)
-    # diff2 = np.diff(gsr_data, n=2)
-    # diff_features = [np.mean(diff), np.std(diff)]
-    # diff_features2 = [np.mean(diff2), np.std(diff2)]
-    # d1 = prop_neg_derivatives(diff)
-    # d2 = prop_neg_derivatives(diff2)
-
-    # feature = \
-    #     gsr_features  # + diff_features + diff_features2 + d1 + d2
-    # # _get_frequency_features(gsr_data)
-    # # [gsr_entropy]
-    gsr_features = mean(gsr_data) + \
-        standard_deviation(gsr_data) + get_frequency_peak(gsr_data) + \
-        get_max_amp_peak(gsr_data) + sum_of_negative_derivative(gsr_data)
+    gsr_features = mean(gsr_data) + median(gsr_data) + \
+        get_frequency_peak(gsr_data) + \
+        get_var_amp_peak(gsr_data) + \
+        sum_of_positive_derivative(gsr_data) + \
+        sum_of_negative_derivative(gsr_data) + \
+        std_amp_peak(gsr_data) + \
+        skewness_amp_peak(gsr_data) + \
+        kurtosis_amp_peak(gsr_data) + max_abs_amp_peak(gsr_data) + \
+        variance(gsr_data) + standard_deviation(gsr_data)
     return np.array(gsr_features)
 
 
