@@ -17,7 +17,7 @@ else:
 
 
 def prepare_experimental_data():
-    path = "data/prepared_data0"
+    path = "data/prepared_data"
     participant_list = [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
                         32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43]
     label_path = "data/labels/self_report.csv"
@@ -85,7 +85,7 @@ physiological_data, labels = prepare_experimental_data()
 # lstm_classification(physiological_data, labels, WINDOW_SIZE,
 #                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 #cnn_lstm_classification(physiological_data, labels, CLASSES)
-# feature_classification(physiological_data, labels, WINDOW_SIZE,
-#                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
-kfold_testing(physiological_data, labels, WINDOW_SIZE,
-              CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+feature_classification(physiological_data, labels, WINDOW_SIZE,
+                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+# kfold_testing(physiological_data, labels, WINDOW_SIZE,
+#              CLASSES, sampling_rate=GSR_SAMPLING_RATE)

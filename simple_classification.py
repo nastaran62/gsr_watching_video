@@ -284,7 +284,6 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
         y_train, y_test = labels[train_index], labels[test_index]
         print(physiological_train.shape, physiological_test.shape)
         print(y_train.shape, y_test.shape)
-        input()
         preds_physiological = \
             physiological_classification(
                 physiological_train, physiological_test, y_train, y_test, classes)
