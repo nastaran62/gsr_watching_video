@@ -3,7 +3,7 @@ from load_data import load_all_physiological, load_all_labels, load_labels, load
 from physiological.preprocessing import physiological_preprocessing
 from lstm_classification import lstm_classification
 from cnn_lstm_classification import cnn_lstm_classification
-from simple_classification import feature_classification, kfold_testing
+from simple_classification import feature_classification, kfold_testing, kfold_testing_new
 
 
 WINDOW_SIZE = 1
@@ -81,11 +81,12 @@ def prepare_deap_data():
 
 # Loading experimental dataset
 physiological_data, labels = prepare_experimental_data()
-
 # lstm_classification(physiological_data, labels, WINDOW_SIZE,
 #                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 #cnn_lstm_classification(physiological_data, labels, CLASSES)
-feature_classification(physiological_data, labels, WINDOW_SIZE,
-                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+# feature_classification(physiological_data, labels, WINDOW_SIZE,
+#                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 # kfold_testing(physiological_data, labels, WINDOW_SIZE,
 #              CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+kfold_testing_new(physiological_data, labels, WINDOW_SIZE,
+                  CLASSES, sampling_rate=GSR_SAMPLING_RATE)

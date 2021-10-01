@@ -14,7 +14,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 from sklearn.utils import shuffle
@@ -240,8 +240,8 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
         part_count = 1
     else:
         part_length = part_seconds * sampling_rate
-        part_count = int(points / part_length)
-        print(part_count)
+        step = 1 * sampling_rate
+        part_count = int((points - part_length) / step) + 1
     all_participants_labels = []
     for p in range(participants):
         all_trials_physiological = []
@@ -249,17 +249,24 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
         for t in range(trials):
             physiological_parts = []
             all_parts_labels = []
+            start = 0
+            end = part_length
             for i in range(part_count):
                 physiological_parts.append(get_gsr_features(
-                    physiological_data[p, t, i*part_length:(i+1)*part_length]))
+                    physiological_data[p, t, start:end]))
+                start = start + step
+                end = start + part_length
                 all_parts_labels.append(labels[p, t])
             all_trial_labels.append(all_parts_labels)
+
+            physiological_parts = np.array(physiological_parts)
             all_trials_physiological.append(physiological_parts)
         all_participants_labels.append(all_trial_labels)
         all_physiological_features.append(all_trials_physiological)
     physiological_data = np.array(all_physiological_features)
     all_participants_labels = np.array(all_participants_labels)
 
+    print(physiological_data.shape, np.array(all_participants_labels).shape)
     physiological_features = \
         physiological_data.reshape(-1, physiological_data.shape[-1])
     labels = \
@@ -269,19 +276,97 @@ def kfold_testing(physiological_data, labels, part_seconds, classes, sampling_ra
     for i in range(len(CLASSES)):
         print("class count", CLASSES[i], (np.array(labels) == CLASSES[i]).sum())
     k = 5
-    kf = KFold(n_splits=k, shuffle=True, random_state=100)
+    kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=100)
     sum_fscore = 0
     sum_accuracy = 0
     fold = 0
-    for train_index, test_index in kf.split(labels):
+    print(labels.shape)
+    print(physiological_features.shape)
+    for train_index, test_index in kf.split(labels, y=labels):
         physiological_train, physiological_test = \
             physiological_features[train_index, :], physiological_features[test_index, :]
-        #mean = np.mean(physiological_train)
-        #std = np.std(physiological_train)
-        #physiological_train = (physiological_train - mean) / std
-        #physiological_test = (physiological_test - mean) / std
 
         y_train, y_test = labels[train_index], labels[test_index]
+        print(physiological_train.shape, physiological_test.shape)
+        print(y_train.shape, y_test.shape)
+
+        preds_physiological = \
+            physiological_classification(
+                physiological_train, physiological_test, y_train, y_test, classes)
+        accuracy, precision, recall, f_score = \
+            validate_predictions(preds_physiological, y_test, classes)
+        print("fold, accuracy, precision, recall, f_score",
+              fold, accuracy, precision, recall, f_score)
+        sum_fscore += f_score
+        sum_accuracy += accuracy
+        fold += 1
+    print("avg_fscore: ", sum_fscore/k, "avg_accuracy: ", sum_accuracy/k)
+
+
+def kfold_testing_new(physiological_data, labels, part_seconds, classes, sampling_rate=128):
+    participants, trials = np.array(labels).shape
+    participants, trials, points = physiological_data.shape
+    all_physiological_features = []
+    if part_seconds == 0:
+        part_length = points
+        part_count = 1
+    else:
+        part_length = part_seconds * sampling_rate
+        step = 1 * sampling_rate
+        part_count = int((points - part_length) / step) + 1
+    all_participants_labels = []
+    for p in range(participants):
+        all_trials_physiological = []
+        all_trial_labels = []
+        for t in range(trials):
+            physiological_parts = []
+            all_parts_labels = []
+            start = 0
+            end = part_length
+            for i in range(part_count):
+                physiological_parts.append(get_gsr_features(
+                    physiological_data[p, t, start:end]))
+                start = start + step
+                end = start + part_length
+                all_parts_labels.append(labels[p, t])
+            all_trial_labels.append(all_parts_labels)
+            physiological_parts = np.array(physiological_parts)
+            all_trials_physiological.append(physiological_parts)
+        all_participants_labels.append(all_trial_labels)
+        all_physiological_features.append(all_trials_physiological)
+    physiological_data = np.array(all_physiological_features)
+    all_participants_labels = np.array(all_participants_labels)
+
+    print(physiological_data.shape, np.array(all_participants_labels).shape)
+    physiological_features = \
+        physiological_data.reshape(-1, *physiological_data.shape[-2:])
+    labels = np.array(all_participants_labels).reshape(-1,
+                                                       np.array(all_participants_labels).shape[-1])
+    print(physiological_features.shape, labels.shape)
+    # CLASSES COUNT
+    CLASSES = [0, 1]
+    for i in range(len(CLASSES)):
+        print("class count", CLASSES[i], (np.array(labels) == CLASSES[i]).sum())
+    k = 5
+    kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=50)
+    sum_fscore = 0
+    sum_accuracy = 0
+    fold = 0
+    print(labels.shape)
+    print(physiological_features.shape)
+    for train_index, test_index in kf.split(labels, y=labels[:, 0]):
+        physiological_train, physiological_test = \
+            physiological_features[train_index, :, :], physiological_features[test_index, :, :]
+
+        y_train, y_test = labels[train_index, :], labels[test_index, :]
+        print(physiological_train.shape, physiological_test.shape)
+        print(y_train.shape, y_test.shape)
+        physiological_train = \
+            physiological_train.reshape(-1, physiological_train.shape[-1])
+        y_train = y_train.reshape(-1)
+        physiological_test = \
+            physiological_test.reshape(-1, physiological_test.shape[-1])
+        y_test = y_test.reshape(-1)
         print(physiological_train.shape, physiological_test.shape)
         print(y_train.shape, y_test.shape)
         preds_physiological = \

@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
+from scipy.fftpack import fft
 
 
 def display_signal(signal):
@@ -13,19 +14,35 @@ def display_signal(signal):
     plt.show()
 
 
+def get_frequency(signal):
+    sample_rate = 128
+    N = (2 - 0) * sample_rate
+    frequency = np.linspace(0.0, 50, int(N/2))
+    freq_data = fft(signal)
+    y = 2/N * np.abs(freq_data[0:np.int(N/2)])
+    plt.plot(frequency, y)
+    plt.title('Frequency domain Signal')
+    plt.xlabel('Frequency in Hz')
+    plt.ylabel('Amplitude')
+    plt.show()
+
+
 def physiological_preprocessing(physiological_data, sampling_rate=128):
     '''
     Preprocesss ppg and gsr and epoches data based on triggers
     Then concat ppg and gsr
     '''
-
+    # display_signal(physiological_data)
+    # get_frequency(physiological_data)
     preprocessed_gsr = gsr_noise_cancelation(physiological_data,
                                              sampling_rate)
+    # display_signal(preprocessed_gsr)
     #data = normalization(np.array(preprocessed_gsr))
     # display_signal(normalization(np.array(preprocessed_gsr)))
     normalized = baseline_normalization(preprocessed_gsr[sampling_rate*3:],
                                         preprocessed_gsr[0:3*sampling_rate],
                                         128)
+    # display_signal(normalized)
     return normalized
 
 
@@ -43,6 +60,8 @@ def gsr_noise_cancelation(data, sampling_rate, low_pass=0.1, high_pass=15):
 
 
 def baseline_normalization(data, baseline, sampling_rate=128):
+    mean = np.mean(baseline)
+    return data - mean
     length = int(baseline.shape[0] / sampling_rate)
     all = []
     for i in range(length):
