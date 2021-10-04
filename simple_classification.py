@@ -20,7 +20,7 @@ from sklearn.decomposition import PCA
 from sklearn.utils import shuffle
 
 from utils import validate_predictions
-from physiological.feature_extraction import get_gsr_features
+from physiological.feature_extraction import extract_gsr_components
 
 
 def pca_classification(physiological_data, labels, classes):
@@ -324,8 +324,8 @@ def kfold_testing_new(physiological_data, labels, part_seconds, classes, samplin
             start = 0
             end = part_length
             for i in range(part_count):
-                physiological_parts.append(get_gsr_features(
-                    physiological_data[p, t, start:end]))
+                physiological_parts.append(extract_gsr_components(
+                    physiological_data[p, t, start:end], sampling_rate))
                 start = start + step
                 end = start + part_length
                 all_parts_labels.append(labels[p, t])

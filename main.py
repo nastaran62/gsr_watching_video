@@ -6,7 +6,7 @@ from cnn_lstm_classification import cnn_lstm_classification
 from simple_classification import feature_classification, kfold_testing, kfold_testing_new
 
 
-WINDOW_SIZE = 1
+WINDOW_SIZE = 9
 LABEL_TYPE = "arousal"
 GSR_SAMPLING_RATE = 128
 
