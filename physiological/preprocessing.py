@@ -61,7 +61,7 @@ def gsr_noise_cancelation(data, sampling_rate, low_pass=0.1, high_pass=15):
 
 def baseline_normalization(data, baseline, sampling_rate=128):
     mean = np.mean(baseline)
-    return data - mean
+    # return data - mean
     length = int(baseline.shape[0] / sampling_rate)
     all = []
     for i in range(length):
@@ -72,3 +72,10 @@ def baseline_normalization(data, baseline, sampling_rate=128):
     for i in range(window_count):
         data[i*sampling_rate:(i+1)*sampling_rate] -= baseline
     return data
+
+def normalization(data):
+    # Normalization
+    min = np.amin(data)
+    max = np.amax(data)
+    output = (data - min) / (max - min)
+    return output 

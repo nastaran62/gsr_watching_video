@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 from neurokit.bio.bio_eda import eda_process
+from scipy.fftpack import fft
 
 
 def prop_neg_derivatives(arr):
@@ -224,17 +225,72 @@ def minimum(data):
     '''
     return [min(data)]
 
+def group_one(gsr_data):
+    return get_frequency_peak(gsr_data) + range(gsr_data) + sum_of_negative_derivative(gsr_data) + standard_deviation(gsr_data)
+
+def group_two(gsr_data):
+    return get_max_amp_peak(gsr_data) + mean(gsr_data) + median(gsr_data) + maximum(gsr_data) + minimum(gsr_data)
+
+def group_three(gsr_data):
+    return get_var_amp_peak(gsr_data) + std_amp_peak(gsr_data) + max_abs_amp_peak(gsr_data) + variance(gsr_data) + \
+        standard_deviation(gsr_data) + sum_of_positive_derivative(gsr_data) + mean(gsr_data) + median(gsr_data) + range(gsr_data) + maximum(gsr_data) + minimum(gsr_data)
+
+def group_four(gsr_data):
+    return skewness_amp_peak(gsr_data)
+
+def group_five(gsr_data):
+    return kurtosis_amp_peak(gsr_data) + kurtosis(gsr_data)
+
+def group_six(gsr_data):
+    return max_abs_amp_peak(gsr_data) + get_var_amp_peak(gsr_data) + std_amp_peak(gsr_data) + max_abs_amp_peak(gsr_data) + variance(gsr_data) + standard_deviation(gsr_data) + sum_of_positive_derivative(gsr_data) + range(gsr_data)
+
+def group_seven(gsr_data):
+    return max_abs_amp_peak(gsr_data) + mean(gsr_data) + median(gsr_data) + maximum(gsr_data) + minimum(gsr_data)
+
+def group_eight(gsr_data):
+    return skewness_amp_peak(gsr_data)
+
+def ratio_of_minimum_maximum(gsr_data):
+    ratio = min(gsr_data)/min(gsr_data)
+    return [ratio]
+
+def wearable_emotion_recognition_system_based_feature_extraction(gsr_data):
+    # Time domain
+    time_domain_features = mean(gsr_data) + median(gsr_data) + standard_deviation(gsr_data) + maximum(gsr_data) + minimum(gsr_data) + ratio_of_minimum_maximum(gsr_data)
+    time_domain_first_derivative = np.diff(time_domain_features, n=1)
+    time_domain_first_derivative_features = mean(time_domain_first_derivative) + median(time_domain_first_derivative) + standard_deviation(time_domain_first_derivative) + maximum(time_domain_first_derivative) + minimum(time_domain_first_derivative) + ratio_of_minimum_maximum(time_domain_first_derivative)
+    time_domain_second_derivative = np.diff(time_domain_features, n=2)
+    time_domain_second_derivative_features = mean(time_domain_second_derivative) + median(time_domain_second_derivative) + standard_deviation(time_domain_second_derivative) + maximum(time_domain_second_derivative) + minimum(time_domain_second_derivative) + ratio_of_minimum_maximum(time_domain_second_derivative)
+
+    final_time_domain_features = time_domain_features + time_domain_first_derivative.tolist() + time_domain_first_derivative_features + time_domain_second_derivative.tolist() + time_domain_second_derivative_features
+
+    # Frequency domian
+    freq_data = fft(gsr_data).astype(np.float32).tolist()
+    final_frequency_domain_features = mean(freq_data) + median(freq_data) + standard_deviation(freq_data) + maximum(freq_data) + minimum(freq_data) + range(freq_data)
+
+    return final_time_domain_features + final_frequency_domain_features
 
 def get_gsr_features(gsr_data):
-    gsr_features = mean(gsr_data) + median(gsr_data) + \
-        get_frequency_peak(gsr_data) + \
-        get_var_amp_peak(gsr_data) + \
-        sum_of_positive_derivative(gsr_data) + \
-        sum_of_negative_derivative(gsr_data) + \
-        std_amp_peak(gsr_data) + \
-        skewness_amp_peak(gsr_data) + \
-        kurtosis_amp_peak(gsr_data) + max_abs_amp_peak(gsr_data) + \
-        variance(gsr_data) + standard_deviation(gsr_data)
+    gsr_features = []
+
+    # gsr_features += group_one(gsr_data)
+
+    # gsr_features += group_two(gsr_data)
+
+    # gsr_features += group_three(gsr_data)
+
+    # gsr_features += group_four(gsr_data)
+
+    # gsr_features += group_five(gsr_data)
+    
+    # gsr_features += group_six(gsr_data)
+    
+    # gsr_features += group_seven(gsr_data)
+
+    gsr_features += group_eight(gsr_data)
+
+    # gsr_features += wearable_emotion_recognition_system_based_feature_extraction(gsr_data)
+
     return np.array(gsr_features)
 
 
@@ -245,11 +301,21 @@ def _get_multimodal_statistics(signal_data):
 
 
 def extract_gsr_components(gsr_data, sampling_rate):
+    # freq_data = fft(gsr_data)
     processed_eda = eda_process(gsr_data, sampling_rate=sampling_rate)
     eda = processed_eda['df']
-    phasic = eda["EDA_Phasic"]
-    tonic = eda["EDA_Tonic"]
-    return np.array(phasic), np.array(tonic)
+    # phasic = np.array(eda["EDA_Phasic"])
+    tonic = np.array(eda["EDA_Tonic"])
+    # raw_features = get_gsr_features(gsr_data)
+    # phasic_features = get_gsr_features(phasic)
+    tonic_features = get_gsr_features(tonic)
+    # freq_data_features = get_gsr_features(freq_data)
+    features = []
+    # features += raw_features.tolist() 
+    # features += phasic_features.tolist()
+    features += tonic_features.tolist() 
+    # features += freq_data_features.astype(np.float32).tolist()
+    return np.array(features)
     '''
     filtered = eda["EDA_Filtered"]
 
