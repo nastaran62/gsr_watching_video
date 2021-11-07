@@ -4,7 +4,7 @@ from physiological.preprocessing import physiological_preprocessing
 from lstm_classification import lstm_classification
 from cnn_lstm_classification import cnn_lstm_classification
 from simple_classification import feature_classification, kfold_testing, kfold_testing_new
-
+from simple_dnn import simple_dnn_classification
 
 WINDOW_SIZE = 9
 LABEL_TYPE = "arousal"
@@ -77,16 +77,17 @@ def prepare_deap_data():
 
 
 # Loading deap dataset
-#physiological_data, labels = prepare_deap_data()
+# physiological_data, labels = prepare_deap_data()
 
 # Loading experimental dataset
 physiological_data, labels = prepare_experimental_data()
 # lstm_classification(physiological_data, labels, WINDOW_SIZE,
 #                    CLASSES, sampling_rate=GSR_SAMPLING_RATE)
-#cnn_lstm_classification(physiological_data, labels, CLASSES)
+# cnn_lstm_classification(physiological_data, labels, CLASSES)
 # feature_classification(physiological_data, labels, WINDOW_SIZE,
 #                       CLASSES, sampling_rate=GSR_SAMPLING_RATE)
 # kfold_testing(physiological_data, labels, WINDOW_SIZE,
 #              CLASSES, sampling_rate=GSR_SAMPLING_RATE)
-kfold_testing_new(physiological_data, labels, WINDOW_SIZE,
-                  CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+# kfold_testing_new(physiological_data, labels, WINDOW_SIZE,
+#                   CLASSES, sampling_rate=GSR_SAMPLING_RATE)
+simple_dnn_classification(physiological_data, labels, CLASSES)
