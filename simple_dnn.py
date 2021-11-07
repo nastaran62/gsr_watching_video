@@ -21,6 +21,11 @@ def simple_dnn_classification(physiological_data, labels, classes):
 
 
 def simple_dnn(train_x, test_x, train_y, test_y):
+
+    print("Train x shape", train_x.shape)
+    print("Train y shape", train_y.shape)
+    print("Test x shape", test_x.shape)
+    print("Test y shape", test_y.shape)
     class_weights = \
         class_weight.compute_class_weight('balanced',
                                           np.unique(train_y),
@@ -34,27 +39,17 @@ def simple_dnn(train_x, test_x, train_y, test_y):
     train_y = to_categorical(train_y)
     test_y = to_categorical(test_y)
 
-    # define model
-    verbose, epochs, batch_size = 1, 100, 1
-    n_timesteps, n_outputs = train_x.shape[1], train_y.shape[1]
-
-    n_steps = 10
-    n_features = 1
-    # reshape data into time steps of sub-sequences
-    n_length = int(n_timesteps/n_steps)
-    train_x = train_x.reshape((train_x.shape[0], n_steps, n_length, n_features))
-    test_x = test_x.reshape((test_x.shape[0], n_steps, n_length, n_features))
 
     print("Train x shape", train_x.shape)
     print("Train y shape", train_y.shape)
     print("Test x shape", test_x.shape)
     print("Test y shape", test_y.shape)
-    n_timesteps, n_outputs = train_x.shape[1], train_y.shape[1]
-    n_length = int(n_timesteps/n_steps)
+    verbose, epochs, batch_size = 1, 100, 1
+
 
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Flatten())
-    model.add(tf.keras.layers.Dense(64,input_shape=(train_x.shape[1], train_x.shape[2], train_x.shape[3]), activation='relu'))
+    model.add(tf.keras.layers.Dense(64,input_shape=(train_x.shape[1],), activation='relu'))
     model.add(tf.keras.layers.Dense(64, activation='relu'))
     model.add(tf.keras.layers.Dense(128, activation='relu'))
     model.add(tf.keras.layers.Dense(128, activation='relu'))
@@ -66,7 +61,7 @@ def simple_dnn(train_x, test_x, train_y, test_y):
     model.add(tf.keras.layers.Dense(64, activation='relu'))
     model.add(tf.keras.layers.Dense(64, activation='relu'))
 
-    model.add(tf.keras.layers.Dense(n_outputs, activation=tf.nn.softmax))
+    model.add(tf.keras.layers.Dense(2, activation=tf.nn.softmax))
 
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     # fit network
